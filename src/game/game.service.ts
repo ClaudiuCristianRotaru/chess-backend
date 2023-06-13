@@ -34,6 +34,18 @@ export class GameService {
         }
     }
 
+    async getTopGames(): Promise<Game[]> {
+        return await this.gameRepository
+        .createQueryBuilder("game")
+        .innerJoinAndSelect("game.white_user", "white")
+        .innerJoinAndSelect("game.black_user", "black")
+        .addSelect("(game.white_rating + game.black_rating)/2", "average_rating")
+        .where("game.game_date BETWEEN NOW() - INTERVAL '24HOURS' AND NOW()")
+        .orderBy("average_rating", "DESC")
+        .limit(10)
+        .getMany();
+    }
+
     async getGamesByUserId(id: string): Promise<Game[]> {
         if(!isUUID(id)) return null;
         return await this.gameRepository.find(
@@ -51,15 +63,15 @@ export class GameService {
         return await this.gameRepository.findOneBy({ id: id });
     }
 
-    async getGamesByUsername(username: string, query: string): Promise<Game[]> {
+    async getGamesByUsername(username: string, page: string, pageSize: number): Promise<Game[]> {
         return await this.gameRepository.find(
             {
                 where: [
                     { white_user: { username: username } },
                     { black_user: { username: username } }
                 ], order: { gameDate: 'DESC' },
-                skip: parseInt(query)*5,
-                take: 5
+                skip: parseInt(page)*pageSize,
+                take: pageSize
             })
     }
 
@@ -74,7 +86,6 @@ export class GameService {
     }
 
     async create(createGameDto: CreateGameDto): Promise<Game> {
-        console.log(createGameDto);
         let whitePlayer: User = await this.userService.getPlayerById(createGameDto.white_id);
         let blackPlayer: User = await this.userService.getPlayerById(createGameDto.black_id);
         let newGame = this.gameRepository.create({

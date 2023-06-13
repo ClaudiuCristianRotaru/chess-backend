@@ -11,40 +11,41 @@ export class SavedGameService {
 
     constructor(
         @InjectRepository(SavedGame) private readonly savedGameRepository: Repository<SavedGame>,
-        private userService : UserService,
-        private gameService: GameService) {}
+        private userService: UserService,
+        private gameService: GameService) { }
 
-    async create(createSavedGameDto: CreateSavedGameDto) : Promise<SavedGame> {
+    async create(createSavedGameDto: CreateSavedGameDto): Promise<SavedGame> {
         let user: User = await this.userService.getPlayerByName(createSavedGameDto.username);
-        if(!user){
+        if (!user) {
             throw new HttpException({
                 error: 'Not Found.',
                 message: ["User not found"],
             }, HttpStatus.NOT_FOUND);
         }
         let game: Game = await this.gameService.getGameById(createSavedGameDto.game_id);
-        if(!game) {
+        if (!game) {
             throw new HttpException({
                 error: 'Not Found.',
                 message: ["Game not found"],
             }, HttpStatus.NOT_FOUND);
         }
         let newSavedGame = this.savedGameRepository.create({
-            user:user,
-            game:game,
+            user: user,
+            game: game,
             note: createSavedGameDto.note
         });
         return this.savedGameRepository.save(newSavedGame);
     }
 
-    async getSavedGamesByUsername(username: string, query: string): Promise<SavedGame[]> {
+    async getSavedGamesByUsername(username: string, page: string, pageSize: number): Promise<SavedGame[]> {
         return await this.savedGameRepository.find(
             {
                 where: [
                     { user: { username: username } },
                 ],
-                skip: parseInt(query)*5,
-                take: 5
+                skip: parseInt(page) * pageSize,
+                take: pageSize,
+                order: { id: "DESC" }
             })
     }
 
@@ -54,6 +55,25 @@ export class SavedGameService {
                 where: [
                     { user: { username: username } },
                 ],
-        })
+            })
+    }
+
+    async getSavedGameByUsername(id: string, username: string): Promise<SavedGame> {
+        return await this.savedGameRepository.findOne(
+            {
+                where: [
+                    {
+                        user: { username: username },
+                        game: { id:id }
+                    },
+                ],
+            })
+    }
+
+    async deleteSavedGame(id: string): Promise<any> {
+        return await this.savedGameRepository.delete(
+            {
+                id:id
+            })
     }
 }

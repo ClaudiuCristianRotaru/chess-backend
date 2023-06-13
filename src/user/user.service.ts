@@ -27,6 +27,7 @@ export class UserService {
             return await this.userRepository
             .createQueryBuilder("user")
             .orderBy(`user.${orderField}`, order)
+            .addOrderBy(`user.creationDate`, "DESC")
             .getMany();
         }
         catch (err) {

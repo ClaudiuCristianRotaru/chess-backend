@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import { Convert } from 'src/convert-data';
 import { SavedGameService } from './saved-game.service';
 import { SavedGameData } from './saved-game.interface';
@@ -17,9 +17,9 @@ export class SavedGameController {
     }
 
     @Get('user/:username')
-    async getGamesByUsername(@Param() params: any, @Query('page') query?: string): Promise<SavedGameData[]> {
+    async getGamesByUsername(@Param() params: any,  @Query('page') page?: string, @Query('pageSize') pageSize?: string): Promise<SavedGameData[]> {
         let gameArray: SavedGameData[] = [];
-        (await this.savedGameService.getSavedGamesByUsername(params.username, query)).forEach(savedGame =>{
+        (await this.savedGameService.getSavedGamesByUsername(params.username, page, parseInt(pageSize))).forEach(savedGame =>{
             gameArray.push(Convert.createSavedGameData(savedGame));
         });
         return gameArray;
@@ -28,5 +28,15 @@ export class SavedGameController {
     @Get('user/:username/count')
     async getGameCountByUsername(@Param() params: any): Promise<number> {
         return this.savedGameService.getGameCountByUsername(params.username);
+    }
+
+    @Get(':id/user/:username')
+    async getGameByUsername(@Param() params: any): Promise<SavedGameData> {
+        return Convert.createSavedGameData(await this.savedGameService.getSavedGameByUsername(params.id, params.username));
+    }
+
+    @Delete('id/:id')
+    async deleteGame(@Param() params: any): Promise<any> {
+        await this.savedGameService.deleteSavedGame(params.id);
     }
 }

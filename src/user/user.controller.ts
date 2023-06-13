@@ -14,10 +14,12 @@ export class UserController {
       ) {}
 
     @Get('users?')
-    async getAllUsers(@Query('orderBy') query?: string): Promise<UserData[]> {
-        let userArray: UserData[] = [];
+    async getAllUsers(@Query('orderBy') query?: string): Promise<{index: number, userData: UserData}[]> {
+        let userArray: {index: number, userData: UserData}[] = [];
+        let index: number = 1;
         (await this.userService.getAllUsers(query)).forEach(user =>{
-            userArray.push(Convert.createUserData(user));
+            userArray.push({index: index, userData: Convert.createUserData(user)});
+            index++;
         });
         return userArray;
     }

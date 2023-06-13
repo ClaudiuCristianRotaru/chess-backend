@@ -23,6 +23,15 @@ export class GameController {
         return gameArray;
     }
 
+    @Get('games/top')
+    async getTopGames(): Promise<GameData[]> {
+        let gameArray: GameData[] = [];
+        (await this.gameService.getTopGames()).forEach(game =>{
+            gameArray.push(Convert.createGameData(game));
+        });
+        return gameArray;
+    }
+
     @Get(':id')
     async getGameById(@Param() params: any): Promise<GameData> {
         return Convert.createGameData(await this.gameService.getGameById(params.id))
@@ -38,9 +47,9 @@ export class GameController {
     }
 
     @Get('user/:username')
-    async getGamesByUsername(@Param() params: any, @Query('page') query?: string): Promise<GameData[]> {
+    async getGamesByUsername(@Param() params: any, @Query('page') page?: string, @Query('pageSize') pageSize?: string): Promise<GameData[]> {
         let gameArray: GameData[] = [];
-        (await this.gameService.getGamesByUsername(params.username, query)).forEach(game =>{
+        (await this.gameService.getGamesByUsername(params.username, page, parseInt(pageSize))).forEach(game =>{
             gameArray.push(Convert.createGameData(game));
         });
         return gameArray;
