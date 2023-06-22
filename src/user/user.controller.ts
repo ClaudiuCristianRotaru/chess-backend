@@ -24,6 +24,11 @@ export class UserController {
         return userArray;
     }
 
+    @Get('verify')
+    async verify(){
+        return { valid : "true"};
+    }
+
     @Post('login')
     async login(@Body() loginUserDto: LoginUserDto) : Promise<UserData> {
         return this.userService.login(loginUserDto);
