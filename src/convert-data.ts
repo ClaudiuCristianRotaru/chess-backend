@@ -26,11 +26,11 @@ export class Convert {
         }, HttpStatus.NOT_FOUND);
         return {
             id: game.id,
-            black_player: this.createUserData(game.black_user),
-            white_player: this.createUserData(game.white_user),
+            blackPlayer: this.createUserData(game.black_user),
+            whitePlayer: this.createUserData(game.white_user),
             result: game.result,
             FENS: game.FENS,
-            chat_logs: game.chat_logs,
+            chatLogs: game.chatLogs,
             date: game.gameDate,
             whiteRating: game.whiteRating,
             blackRating: game.blackRating

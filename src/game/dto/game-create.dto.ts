@@ -4,5 +4,5 @@ export class CreateGameDto {
     black_id: string;
     result: string;
     FENS: string;
-    chat_logs: string;
+    chatLogs: string;
   }

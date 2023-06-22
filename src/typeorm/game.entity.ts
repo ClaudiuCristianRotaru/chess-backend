@@ -22,9 +22,10 @@ export class Game {
   FENS: string;
 
   @Column({
+    name: "chat_logs",
     default: '',
   })
-  chat_logs: string;
+  chatLogs: string;
 
   @Column({
     name: "game_date",

@@ -2,11 +2,11 @@ import { UserData } from "src/user/user.interface";
 
 export interface GameData {
     id: string;
-    black_player: UserData;
-    white_player: UserData;
+    blackPlayer: UserData;
+    whitePlayer: UserData;
     result: string;
     FENS: string;
-    chat_logs: string;
+    chatLogs: string;
     date: Date;
     whiteRating: number;
     blackRating: number;

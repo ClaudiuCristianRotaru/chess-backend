@@ -34,6 +34,7 @@ export class User {
   rating: number;
 
   @Column({
+    name: "creation_date",
     nullable: false,
     type: 'timestamptz',
   })

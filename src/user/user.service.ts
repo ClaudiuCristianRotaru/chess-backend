@@ -14,7 +14,7 @@ export class UserService {
 
     constructor(private jwtService: JwtService, @InjectRepository(User) private readonly userRepository: Repository<User>) { }
 
-    async getAllUsers(query: string): Promise<User[]> {
+    getAllUsers(query: string): Promise<User[]> {
         try {
             let orderField = "rating";
             let order : "ASC"|"DESC" = "DESC";
@@ -24,7 +24,7 @@ export class UserService {
                 orderField = queryArray[0];
                 order = queryArray[1] == "asc" ? "ASC" : "DESC";
             }
-            return await this.userRepository
+            return this.userRepository
             .createQueryBuilder("user")
             .orderBy(`user.${orderField}`, order)
             .addOrderBy(`user.creationDate`, "DESC")
@@ -32,7 +32,7 @@ export class UserService {
         }
         catch (err) {
             console.error(err);
-            return [];
+            return null;
         }
     }
 
@@ -44,7 +44,9 @@ export class UserService {
                 message: ['Username or password is incorrect'],
             }, HttpStatus.BAD_REQUEST);
         }
+
         let passwordMatch: boolean = await bcrypt.compare(password, user.password);
+        
         if (!passwordMatch) {
             throw new HttpException({
                 error: 'Login failed',

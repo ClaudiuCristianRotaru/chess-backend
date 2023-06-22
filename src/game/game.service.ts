@@ -12,7 +12,7 @@ export class GameService {
     constructor(@InjectRepository(Game) private readonly gameRepository: Repository<Game>,
         private userService: UserService) { }
 
-    async getAllGames(query: string): Promise<Game[]> {
+    getAllGames(query: string): Promise<Game[]> {
         try {
             let orderField = "gameDate";
             let order: "ASC" | "DESC" = "DESC";
@@ -21,7 +21,7 @@ export class GameService {
                 orderField = queryArray[0];
                 order = queryArray[1] == "asc" ? "ASC" : "DESC";
             }
-            return await this.gameRepository
+            return this.gameRepository
                 .createQueryBuilder("game")
                 .innerJoinAndSelect("game.white_user", "white")
                 .innerJoinAndSelect("game.black_user", "black")
@@ -30,12 +30,12 @@ export class GameService {
         }
         catch (err) {
             console.error(err);
-            return [];
+            return null;
         }
     }
 
-    async getTopGames(): Promise<Game[]> {
-        return await this.gameRepository
+    getTopGames(): Promise<Game[]> {
+        return this.gameRepository
         .createQueryBuilder("game")
         .innerJoinAndSelect("game.white_user", "white")
         .innerJoinAndSelect("game.black_user", "black")
@@ -46,9 +46,9 @@ export class GameService {
         .getMany();
     }
 
-    async getGamesByUserId(id: string): Promise<Game[]> {
+    getGamesByUserId(id: string): Promise<Game[]> {
         if(!isUUID(id)) return null;
-        return await this.gameRepository.find(
+        return this.gameRepository.find(
             {
                 where: [
                     { white_user: { id: id } },
@@ -58,13 +58,13 @@ export class GameService {
     }
 
     
-    async getGameById(id: string): Promise<Game> {
+     getGameById(id: string): Promise<Game> {
         if(!isUUID(id)) return null;
-        return await this.gameRepository.findOneBy({ id: id });
+        return this.gameRepository.findOneBy({ id: id });
     }
 
-    async getGamesByUsername(username: string, page: string, pageSize: number): Promise<Game[]> {
-        return await this.gameRepository.find(
+    getGamesByUsername(username: string, page: string, pageSize: number): Promise<Game[]> {
+        return this.gameRepository.find(
             {
                 where: [
                     { white_user: { username: username } },
@@ -75,8 +75,8 @@ export class GameService {
             })
     }
 
-    async getGameCountByUsername(username: string): Promise<number> {
-        return await this.gameRepository.count(
+    getGameCountByUsername(username: string): Promise<number> {
+        return this.gameRepository.count(
             {
                 where: [
                     { white_user: { username: username } },
@@ -92,7 +92,7 @@ export class GameService {
             id: createGameDto.id,
             result: createGameDto.result,
             FENS: createGameDto.FENS,
-            chat_logs: createGameDto.chat_logs,
+            chatLogs: createGameDto.chatLogs,
             white_user: whitePlayer,
             black_user: blackPlayer,
             whiteRating: whitePlayer.rating,
